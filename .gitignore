@@ -1,0 +1,43 @@
+# User-specific MCP config (contains local paths)
+.mcp.json
+
+# Revit MCP test files (not part of this project)
+node_modules/
+revit-test/
+
+# Build outputs
+autocad-plugin/src/AutoCADMCPPlugin/bin/
+autocad-plugin/src/AutoCADMCPPlugin/obj/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Claude Code
+.claude/
+
+# Test drawings
+*.dwg
+
+# Demo/test scripts (keep only source)
+autocad-plugin/demo_*.py
+autocad-plugin/test_*.py
+autocad-plugin/fix_*.py
+autocad-plugin/add_*.py
+autocad-plugin/redraw_*.py
+autocad-plugin/draw_twh28*.py
+autocad-plugin/manual_dims.py
+autocad-plugin/twh28_details.py
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store

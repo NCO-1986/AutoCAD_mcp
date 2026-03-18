@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--
+      Multi-target build:
+        net48          → AutoCAD 2022-2024 (.NET Framework 4.8)
+        net8.0-windows → AutoCAD 2025-2026 (.NET 8)
+
+      To build for just one, change TargetFrameworks to TargetFramework:
+        <TargetFramework>net48</TargetFramework>
+    -->
+    <TargetFrameworks>net48;net8.0-windows</TargetFrameworks>
+    <RootNamespace>AutoCADMCPPlugin</RootNamespace>
+    <AssemblyName>AutoCADMCPPlugin</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Copy Newtonsoft.Json to output, but not AutoCAD DLLs -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- Plugin metadata -->
+    <Version>1.0.0</Version>
+    <Authors>AutoCAD MCP</Authors>
+    <Description>MCP plugin for AI-to-AutoCAD communication via TCP socket</Description>
+  </PropertyGroup>
+
+  <!-- ============================================================ -->
+  <!-- AutoCAD 2022-2024 (.NET Framework 4.8)                       -->
+  <!-- NuGet version 24.2 = AutoCAD 2022                            -->
+  <!-- ============================================================ -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="AutoCAD.NET" Version="24.2.*" />
+    <PackageReference Include="AutoCAD.NET.Core" Version="24.2.*" />
+    <PackageReference Include="AutoCAD.NET.Model" Version="24.2.*" />
+  </ItemGroup>
+
+  <!-- ============================================================ -->
+  <!-- AutoCAD 2025-2026 (.NET 8)                                   -->
+  <!-- NuGet version 25.x = AutoCAD 2025/2026                       -->
+  <!-- ============================================================ -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <PackageReference Include="AutoCAD.NET" Version="25.*" />
+    <PackageReference Include="AutoCAD.NET.Core" Version="25.*" />
+    <PackageReference Include="AutoCAD.NET.Model" Version="25.*" />
+  </ItemGroup>
+
+  <!-- Shared dependencies -->
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.*" />
+  </ItemGroup>
+
+  <!-- Ensure AutoCAD API assemblies are not copied to output (they live in AutoCAD's dir) -->
+  <ItemGroup>
+    <PackageReference Update="AutoCAD.NET" ExcludeAssets="runtime" />
+    <PackageReference Update="AutoCAD.NET.Core" ExcludeAssets="runtime" />
+    <PackageReference Update="AutoCAD.NET.Model" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "autocad-mcp": {
+      "command": "python",
+      "args": ["autocad-plugin/src/mcp_server/server.py"],
+      "env": {
+        "AUTOCAD_MCP_HOST": "localhost",
+        "AUTOCAD_MCP_PORT": "8081"
+      }
+    }
+  }
+}
