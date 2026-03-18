@@ -498,6 +498,37 @@ async def find_intersections(handle1: str, handle2: str) -> str:
     return await _call("find_intersections", {"handle1": handle1, "handle2": handle2})
 
 
+@mcp.tool()
+async def search_text(keyword: str, case_sensitive: bool = False, limit: int = 100) -> str:
+    """Search ALL text in the drawing (DBText, MText, block attributes, block names) for a keyword. Returns matching text with positions. Use this to find rooms, labels, equipment, annotations by name."""
+    return await _call("search_text", {"keyword": keyword, "case_sensitive": case_sensitive, "limit": limit})
+
+
+@mcp.tool()
+async def find_nearest(
+    point: list[float],
+    radius: float = 0,
+    type: str = "",
+    layer: str = "",
+    limit: int = 20
+) -> str:
+    """Find entities nearest to a point [x,y], sorted by distance. Filter by type/layer. Set radius=0 for unlimited range."""
+    params: dict = {"point": point, "limit": limit}
+    if radius > 0:
+        params["radius"] = radius
+    if type:
+        params["type"] = type
+    if layer:
+        params["layer"] = layer
+    return await _call("find_nearest", params)
+
+
+@mcp.tool()
+async def measure_between(handle1: str, handle2: str) -> str:
+    """Measure distance between two entities (center-to-center and closest approach). Returns dx, dy, distances, and entity descriptions."""
+    return await _call("measure_between", {"handle1": handle1, "handle2": handle2})
+
+
 # =============================================================================
 # Layer Tools
 # =============================================================================

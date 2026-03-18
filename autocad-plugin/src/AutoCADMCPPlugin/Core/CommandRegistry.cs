@@ -124,6 +124,9 @@ namespace AutoCADMCPPlugin.Core
             Register(new SelectByWindowCommand());
             Register(new SelectByPropertiesCommand());
             Register(new FindIntersectionsCommand());
+            Register(new SearchTextCommand());
+            Register(new FindNearestCommand());
+            Register(new MeasureBetweenCommand());
 
             // === Annotations ===
             Register(new CreateLinearDimensionCommand());
