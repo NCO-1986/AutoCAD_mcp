@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "autocad-plugin", "autocad-plugin", "{7DDB9804-8DA2-FCF0-5DDC-E8B5552E6620}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2BA2EBB9-8E6D-A33C-2E7B-7704299345D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoCADMCPPlugin", "autocad-plugin\src\AutoCADMCPPlugin\AutoCADMCPPlugin.csproj", "{AAF004F1-1338-DC48-7DB4-CA348577C554}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAF004F1-1338-DC48-7DB4-CA348577C554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAF004F1-1338-DC48-7DB4-CA348577C554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAF004F1-1338-DC48-7DB4-CA348577C554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAF004F1-1338-DC48-7DB4-CA348577C554}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2BA2EBB9-8E6D-A33C-2E7B-7704299345D3} = {7DDB9804-8DA2-FCF0-5DDC-E8B5552E6620}
+		{AAF004F1-1338-DC48-7DB4-CA348577C554} = {2BA2EBB9-8E6D-A33C-2E7B-7704299345D3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E004172A-9782-441F-AAC1-75CBFE59C332}
+	EndGlobalSection
+EndGlobal

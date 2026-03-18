@@ -88,19 +88,60 @@ namespace AutoCADMCPPlugin.Core
             Register(new ScaleEntityCommand());
             Register(new MirrorEntityCommand());
 
+            // === Advanced Entity Modification (Sprint 1-2) ===
+            Register(new SetEntityPropertiesCommand());
+            Register(new OffsetEntityCommand());
+            Register(new ExplodeEntityCommand());
+            Register(new ArrayRectangularCommand());
+            Register(new ArrayPolarCommand());
+            Register(new JoinEntitiesCommand());
+            Register(new BulkEraseCommand());
+            Register(new UndoCommand());
+
             // === Layers ===
             Register(new ListLayersCommand());
             Register(new CreateLayerCommand());
             Register(new SetCurrentLayerCommand());
             Register(new SetLayerPropertiesCommand());
+            Register(new DeleteLayerCommand());
+            Register(new RenameLayerCommand());
 
             // === Blocks ===
             Register(new ListBlocksCommand());
             Register(new InsertBlockCommand());
+            Register(new CreateBlockCommand());
+
+            // === Styles (Sprint 1) ===
+            Register(new CreateDimensionStyleCommand());
+            Register(new CreateTextStyleCommand());
+            Register(new ListDimensionStylesCommand());
+            Register(new ListTextStylesCommand());
+
+            // === Query & Measurement (Sprint 1) ===
+            Register(new MeasureDistanceCommand());
+            Register(new MeasureAreaCommand());
+            Register(new GetBoundingBoxCommand());
+            Register(new SelectByWindowCommand());
+            Register(new SelectByPropertiesCommand());
+            Register(new FindIntersectionsCommand());
 
             // === Annotations ===
             Register(new CreateLinearDimensionCommand());
             Register(new CreateAlignedDimensionCommand());
+            Register(new CreateAngularDimensionCommand());
+            Register(new CreateRadialDimensionCommand());
+            Register(new CreateDiameterDimensionCommand());
+            Register(new CreateLeaderCommand());
+
+            // === Advanced Entity Creation (Sprint 3) ===
+            Register(new CreateSplineCommand());
+            Register(new CreateTableCommand());
+            Register(new BulkCreateCommand());
+
+            // === Drawing Utilities (Sprint 4) ===
+            Register(new PurgeDrawingCommand());
+            Register(new SetUnitsCommand());
+            Register(new PlotToPdfCommand());
 
             // === View ===
             Register(new ZoomExtentsCommand());

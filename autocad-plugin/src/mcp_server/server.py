@@ -226,6 +226,50 @@ async def create_hatch(
 
 
 # =============================================================================
+# Advanced Entity Creation Tools
+# =============================================================================
+
+@mcp.tool()
+async def create_spline(
+    points: list[list[float]],
+    closed: bool = False,
+    layer: str = "",
+    color: int = -1
+) -> str:
+    """Draw a smooth spline curve through points [[x1,y1], ...]. Set closed=true for closed spline."""
+    params = {"points": points, "closed": closed}
+    if layer: params["layer"] = layer
+    if color >= 0: params["color"] = color
+    return await _call("create_spline", params)
+
+
+@mcp.tool()
+async def create_table(
+    position: list[float],
+    rows: int = 3,
+    columns: int = 3,
+    row_height: float = 500,
+    column_width: float = 2000,
+    title: str = "",
+    data: list[list[str]] | None = None,
+    layer: str = ""
+) -> str:
+    """Create a table at position [x,y] with rows/columns. Data is 2D array of cell strings."""
+    params: dict = {"position": position, "rows": rows, "columns": columns,
+                    "row_height": row_height, "column_width": column_width}
+    if title: params["title"] = title
+    if data: params["data"] = data
+    if layer: params["layer"] = layer
+    return await _call("create_table", params)
+
+
+@mcp.tool()
+async def bulk_create(entities: list[dict]) -> str:
+    """Create multiple entities in one call for performance. Each item: {type: 'line'|'circle'|'arc'|'polyline'|'rectangle'|'text'|'mtext'|'ellipse', params: {...}}."""
+    return await _call("bulk_create", {"entities": entities})
+
+
+# =============================================================================
 # Entity Query & Modification Tools
 # =============================================================================
 
@@ -310,6 +354,150 @@ async def mirror_entity(
     })
 
 
+@mcp.tool()
+async def set_entity_properties(
+    handle: str,
+    layer: str = "",
+    color: int = -1,
+    linetype: str = "",
+    lineweight: int = -1
+) -> str:
+    """Change properties of an existing entity: layer, color (ACI 0-255), linetype, lineweight."""
+    params: dict = {"handle": handle}
+    if layer: params["layer"] = layer
+    if color >= 0: params["color"] = color
+    if linetype: params["linetype"] = linetype
+    if lineweight >= 0: params["lineweight"] = lineweight
+    return await _call("set_entity_properties", params)
+
+
+@mcp.tool()
+async def offset_entity(
+    handle: str,
+    distance: float,
+    side: str = "both"
+) -> str:
+    """Offset a curve entity (line/arc/polyline/circle) by distance. Side: 'left', 'right', or 'both'."""
+    return await _call("offset_entity", {"handle": handle, "distance": distance, "side": side})
+
+
+@mcp.tool()
+async def explode_entity(handle: str, erase_original: bool = True) -> str:
+    """Explode a block/polyline/dimension into primitive entities. Returns new entity handles."""
+    return await _call("explode_entity", {"handle": handle, "erase_original": erase_original})
+
+
+@mcp.tool()
+async def array_rectangular(
+    handle: str,
+    rows: int,
+    columns: int,
+    row_spacing: float,
+    column_spacing: float
+) -> str:
+    """Create rectangular array of entity. Returns handles of new copies (original stays)."""
+    return await _call("array_rectangular", {
+        "handle": handle, "rows": rows, "columns": columns,
+        "row_spacing": row_spacing, "column_spacing": column_spacing
+    })
+
+
+@mcp.tool()
+async def array_polar(
+    handle: str,
+    center: list[float],
+    count: int,
+    total_angle: float = 360,
+    rotate_items: bool = True
+) -> str:
+    """Create polar (circular) array of entity around center point."""
+    return await _call("array_polar", {
+        "handle": handle, "center": center, "count": count,
+        "total_angle": total_angle, "rotate_items": rotate_items
+    })
+
+
+@mcp.tool()
+async def join_entities(handles: list[str]) -> str:
+    """Join contiguous lines/arcs into a single polyline. First handle must be a polyline."""
+    return await _call("join_entities", {"handles": handles})
+
+
+@mcp.tool()
+async def bulk_erase(
+    handles: list[str] | None = None,
+    layer: str = "",
+    type: str = ""
+) -> str:
+    """Erase multiple entities at once. By handles list, or by layer/type filter."""
+    params: dict = {}
+    if handles: params["handles"] = handles
+    if layer: params["layer"] = layer
+    if type: params["type"] = type
+    return await _call("bulk_erase", params)
+
+
+@mcp.tool()
+async def undo_last(count: int = 1) -> str:
+    """Undo the last N operations in AutoCAD."""
+    return await _call("undo_last", {"count": count})
+
+
+# =============================================================================
+# Query & Measurement Tools
+# =============================================================================
+
+@mcp.tool()
+async def measure_distance(point1: list[float], point2: list[float]) -> str:
+    """Measure distance between two points. Returns distance, dx, dy, angle."""
+    return await _call("measure_distance", {"point1": point1, "point2": point2})
+
+
+@mcp.tool()
+async def measure_area(handle: str) -> str:
+    """Measure area of a closed entity (polyline, circle, ellipse, hatch). Returns area and perimeter."""
+    return await _call("measure_area", {"handle": handle})
+
+
+@mcp.tool()
+async def get_bounding_box(handle: str) -> str:
+    """Get the bounding box of an entity. Returns min_point, max_point, width, height."""
+    return await _call("get_bounding_box", {"handle": handle})
+
+
+@mcp.tool()
+async def select_by_window(
+    min_point: list[float],
+    max_point: list[float],
+    limit: int = 500
+) -> str:
+    """Find all entities fully inside a rectangular window. Returns handles."""
+    return await _call("select_by_window", {"min_point": min_point, "max_point": max_point, "limit": limit})
+
+
+@mcp.tool()
+async def select_by_properties(
+    layer: str = "",
+    type: str = "",
+    color: int = -1,
+    linetype: str = "",
+    limit: int = 500
+) -> str:
+    """Find entities matching property filters (AND logic). Returns handles with basic info."""
+    params: dict = {"limit": limit}
+    if layer: params["layer"] = layer
+    if type: params["type"] = type
+    if color >= 0: params["color"] = color
+    if linetype: params["linetype"] = linetype
+    return await _call("select_by_properties", params)
+
+
+@mcp.tool()
+async def find_intersections(handle1: str, handle2: str) -> str:
+    """Find intersection points between two curve entities."""
+    return await _call("find_intersections", {"handle1": handle1, "handle2": handle2})
+
+
 # =============================================================================
 # Layer Tools
 # =============================================================================
@@ -356,6 +544,86 @@ async def set_layer_properties(
     return await _call("set_layer_properties", params)
 
 
+@mcp.tool()
+async def delete_layer(name: str) -> str:
+    """Delete a layer. Entities on it are moved to layer '0'. Cannot delete '0' or current layer."""
+    return await _call("delete_layer", {"name": name})
+
+
+@mcp.tool()
+async def rename_layer(old_name: str, new_name: str) -> str:
+    """Rename a layer. Cannot rename layer '0'."""
+    return await _call("rename_layer", {"old_name": old_name, "new_name": new_name})
+
+
+# =============================================================================
+# Style Tools
+# =============================================================================
+
+@mcp.tool()
+async def create_dimension_style(
+    name: str,
+    text_height: float = 0,
+    arrow_size: float = 0,
+    linear_scale_factor: float = 0,
+    decimal_places: int = -1,
+    text_above: bool | None = None,
+    text_color: int = -1,
+    dim_line_color: int = -1,
+    ext_line_color: int = -1,
+    suffix: str = "",
+    text_style: str = "",
+    extension_offset: float = 0,
+    extension_extend: float = 0,
+    text_gap: float = 0,
+    set_current: bool = False
+) -> str:
+    """Create or update a dimension style. Fixes invisible dim text by setting proper text_height and arrow_size."""
+    params: dict = {"name": name, "set_current": set_current}
+    if text_height > 0: params["text_height"] = text_height
+    if arrow_size > 0: params["arrow_size"] = arrow_size
+    if linear_scale_factor > 0: params["linear_scale_factor"] = linear_scale_factor
+    if decimal_places >= 0: params["decimal_places"] = decimal_places
+    if text_above is not None: params["text_above"] = text_above
+    if text_color >= 0: params["text_color"] = text_color
+    if dim_line_color >= 0: params["dim_line_color"] = dim_line_color
+    if ext_line_color >= 0: params["ext_line_color"] = ext_line_color
+    if suffix: params["suffix"] = suffix
+    if text_style: params["text_style"] = text_style
+    if extension_offset > 0: params["extension_offset"] = extension_offset
+    if extension_extend > 0: params["extension_extend"] = extension_extend
+    if text_gap > 0: params["text_gap"] = text_gap
+    return await _call("create_dimension_style", params)
+
+
+@mcp.tool()
+async def create_text_style(
+    name: str,
+    font: str = "Arial",
+    height: float = 0,
+    width_factor: float = 1.0,
+    oblique_angle: float = 0,
+    set_current: bool = False
+) -> str:
+    """Create or update a text style. Height=0 means variable (uses DIMTXT for dimensions)."""
+    return await _call("create_text_style", {
+        "name": name, "font": font, "height": height,
+        "width_factor": width_factor, "oblique_angle": oblique_angle, "set_current": set_current
+    })
+
+
+@mcp.tool()
+async def list_dimension_styles() -> str:
+    """List all dimension styles with their properties."""
+    return await _call("list_dimension_styles")
+
+
+@mcp.tool()
+async def list_text_styles() -> str:
+    """List all text styles with their font, height, and width factor."""
+    return await _call("list_text_styles")
+
+
 # =============================================================================
 # Block Tools
 # =============================================================================
@@ -364,6 +632,19 @@ async def set_layer_properties(
 async def list_blocks() -> str:
     """List all block definitions in the drawing with their attributes."""
     return await _call("list_blocks")
+
+
+@mcp.tool()
+async def create_block(
+    name: str,
+    handles: list[str],
+    base_point: list[float] | None = None,
+    erase_originals: bool = False
+) -> str:
+    """Create a new block definition from existing entities. Provide entity handles and a block name."""
+    params: dict = {"name": name, "handles": handles, "erase_originals": erase_originals}
+    if base_point: params["base_point"] = base_point
+    return await _call("create_block", params)
 
 
 @mcp.tool()
@@ -412,6 +693,66 @@ async def create_linear_dimension(
 
 
 @mcp.tool()
+async def create_angular_dimension(
+    center: list[float],
+    point1: list[float],
+    point2: list[float],
+    dimension_arc_position: list[float],
+    text: str = "",
+    layer: str = ""
+) -> str:
+    """Create an angular dimension measuring the angle at center between two lines."""
+    params: dict = {"center": center, "point1": point1, "point2": point2,
+                    "dimension_arc_position": dimension_arc_position}
+    if text: params["text"] = text
+    if layer: params["layer"] = layer
+    return await _call("create_angular_dimension", params)
+
+
+@mcp.tool()
+async def create_radial_dimension(
+    center: list[float],
+    chord_point: list[float],
+    leader_length: float = 0,
+    text: str = "",
+    layer: str = ""
+) -> str:
+    """Create a radial dimension for a circle or arc."""
+    params: dict = {"center": center, "chord_point": chord_point, "leader_length": leader_length}
+    if text: params["text"] = text
+    if layer: params["layer"] = layer
+    return await _call("create_radial_dimension", params)
+
+
+@mcp.tool()
+async def create_diameter_dimension(
+    center: list[float],
+    chord_point: list[float],
+    leader_length: float = 0,
+    text: str = "",
+    layer: str = ""
+) -> str:
+    """Create a diameter dimension for a circle."""
+    params: dict = {"center": center, "chord_point": chord_point, "leader_length": leader_length}
+    if text: params["text"] = text
+    if layer: params["layer"] = layer
+    return await _call("create_diameter_dimension", params)
+
+
+@mcp.tool()
+async def create_leader(
+    points: list[list[float]],
+    text: str = "",
+    text_height: float = 2.5,
+    layer: str = ""
+) -> str:
+    """Create a leader (callout arrow) with text. Points: [[arrow_tip], ..., [landing_point]]."""
+    params: dict = {"points": points, "text": text, "text_height": text_height}
+    if layer: params["layer"] = layer
+    return await _call("create_leader", params)
+
+
+@mcp.tool()
 async def create_aligned_dimension(
     point1: list[float],
     point2: list[float],
@@ -443,6 +784,40 @@ async def zoom_extents() -> str:
 async def zoom_window(min_point: list[float], max_point: list[float]) -> str:
     """Zoom to a specific rectangular area defined by min [x,y] and max [x,y] corners."""
     return await _call("zoom_window", {"min": min_point, "max": max_point})
+
+
+# =============================================================================
+# Drawing Utility Tools
+# =============================================================================
+
+@mcp.tool()
+async def purge_drawing() -> str:
+    """Remove all unused layers, blocks, styles, and linetypes from the drawing."""
+    return await _call("purge_drawing")
+
+
+@mcp.tool()
+async def set_units(
+    linear_units: int = -1,
+    precision: int = -1,
+    insert_units: int = -1,
+    angle_units: int = -1,
+    angle_precision: int = -1
+) -> str:
+    """Set drawing units. linear_units: 1=Scientific,2=Decimal,3=Engineering,4=Architectural. insert_units: 4=mm,5=cm,6=m."""
+    params: dict = {}
+    if linear_units >= 0: params["linear_units"] = linear_units
+    if precision >= 0: params["precision"] = precision
+    if insert_units >= 0: params["insert_units"] = insert_units
+    if angle_units >= 0: params["angle_units"] = angle_units
+    if angle_precision >= 0: params["angle_precision"] = angle_precision
+    return await _call("set_units", params)
+
+
+@mcp.tool()
+async def plot_to_pdf(output_path: str) -> str:
+    """Export current drawing to PDF file."""
+    return await _call("plot_to_pdf", {"output_path": output_path})
 
 
 # =============================================================================
