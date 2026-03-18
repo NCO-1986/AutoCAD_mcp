@@ -51,6 +51,14 @@ namespace AutoCADMCPPlugin.Commands
                 }
                 if (parameters["lineweight"] != null)
                     ent.LineWeight = (LineWeight)parameters["lineweight"].Value<int>();
+                if (parameters["thickness"] != null)
+                {
+                    double thickness = parameters["thickness"].Value<double>();
+                    if (ent is Autodesk.AutoCAD.DatabaseServices.Line ln) ln.Thickness = thickness;
+                    else if (ent is Autodesk.AutoCAD.DatabaseServices.Polyline pl) pl.Thickness = thickness;
+                    else if (ent is Circle cir) cir.Thickness = thickness;
+                    else if (ent is Arc arc) arc.Thickness = thickness;
+                }
 
                 tr.Commit();
             }
